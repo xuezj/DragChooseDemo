@@ -48,7 +48,7 @@ public class DragChooseView extends View {
     private OnChooseItemListener onChooseItemListener;
     private float x2 = 0;
     private boolean sss = false;
-    private int counts = 2;
+    private int counts = 4;
 
     public DragChooseView(Context context) {
         super(context);
@@ -149,6 +149,10 @@ public class DragChooseView extends View {
         textSize = a.getDimension(R.styleable.drag_choose_view_text_size, 20);
         radius = a.getInt(R.styleable.drag_choose_view_radius, radius);
         counts = a.getInt(R.styleable.drag_choose_view_counts, counts);
+        if(counts<2)
+            counts=2;
+        if (counts>8)
+            counts=8;
         height = radius * 2 * 8 / 17;
         textColors = new int[counts];
         for (int i = 0; i < counts; i++) {
@@ -166,14 +170,15 @@ public class DragChooseView extends View {
         for (int i = 0; i < strings.length; i++) {
             s.add(strings[i]);
         }
+        int j = s.size();
         if (s.size() < counts) {
-            for (int i = 0; i < counts - s.size(); i++) {
+            for (int i = 0; i < counts - j; i++) {
                 s.add("");
             }
-        }else{
-            int j=s.size();
-            for (int i=0;i<j-counts;i++)
-                s.remove(s.size()-1);
+        } else {
+
+            for (int i = 0; i < j - counts; i++)
+                s.remove(s.size() - 1);
 
         }
         if (s.size() != 0) {
@@ -192,34 +197,22 @@ public class DragChooseView extends View {
         super.onDraw(canvas);
         defaultWidth = getWidth();
         defaultHeight = getHeight();
-        Log.d("MyView", "defaultWidth:" + defaultHeight);
-        Log.i("tttttsss", defaultWidth + "ACTION_DOWN" + defaultHeight);
 
-//        if (defaultHeight<120){
-//            defaultHeight=120;
-//        }
         if (removeWidth == 1)
             removeWidth = defaultWidth / (counts * 2);
         long rWidth = Math.round(Math.sqrt(Math.pow(radius, 2) - Math.pow(height / 2, 2)));
-        //画圆和圆边线
         toDrawCircle(canvas);
         toDrawSquares(canvas, rWidth);
 
 
-        //画横线
-
         Bitmap newbm = Bitmap.createScaledBitmap(pressedBitmap, radius * 3, radius * 3, true);
-        //canvas.drawRect(frame.left + MIDDLE_LINE_PADDING, slideTop - MIDDLE_LINE_WIDTH/2, frame.right - MIDDLE_LINE_PADDING,slideTop + MIDDLE_LINE_WIDTH/2, paint);
         canvas.drawBitmap(newbm, removeWidth - newbm.getWidth() / 2, (defaultHeight / 2 + shiftDownHeight) - newbm.getWidth() / 2, null);
         paint.setTextSize(textSize);
         paint.setStyle(Paint.Style.FILL);
         paint.setTextAlign(Paint.Align.CENTER);
         for (int i = 0; i < strings.size(); i++) {
             paint.setColor(textColors[i]);  //设置画笔颜色
-
-            //该方法即为设置基线上那个点究竟是left,center,还是right  这里我设置为center
-
-            canvas.drawText(strings.get(i), defaultWidth * (i * 2 + 1) / (counts*2), defaultHeight / 2 - radius * 2, paint);
+            canvas.drawText(strings.get(i), defaultWidth * (i * 2 + 1) / (counts * 2), defaultHeight / 2 - radius * 2, paint);
         }
 
     }
@@ -258,7 +251,6 @@ public class DragChooseView extends View {
         float x = event.getX();
         float y = event.getY();
         float x1 = event.getX();
-        //获取手指的操作--》按下、移动、松开
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN://按下
@@ -281,7 +273,7 @@ public class DragChooseView extends View {
             case MotionEvent.ACTION_MOVE://移动
                 if (moveFlag) {
                     removeWidth = (int) x;
-                    if (removeWidth >= defaultWidth / (counts*2) && removeWidth <= defaultWidth * (counts*2-1) / (counts*2)) {
+                    if (removeWidth >= defaultWidth / (counts * 2) && removeWidth <= defaultWidth * (counts * 2 - 1) / (counts * 2)) {
                         toColor(toOnTouchMove(removeWidth));
                         invalidate();
                     }
@@ -294,7 +286,6 @@ public class DragChooseView extends View {
 
                 break;
             case MotionEvent.ACTION_UP://松开
-                Log.i("ttttt", "ACTION_UP");
                 if (!sss) {
                     if (drawableEnabled != null)
                         pressedBitmap = drawableEnabled.getBitmap();
@@ -302,7 +293,7 @@ public class DragChooseView extends View {
                         pressedBitmap = drawableToBitmap(getResources().getDrawable(R.drawable.choose_drawable));
                     }
                     int i = toOnTouchUp(x);
-                    removeWidth = defaultWidth * (i * 2 + 1)/ (counts*2);
+                    removeWidth = defaultWidth * (i * 2 + 1) / (counts * 2);
                     toColor(i);
                     if (onChooseItemListener != null) {
                         if (strings.size() == 0)
@@ -310,15 +301,12 @@ public class DragChooseView extends View {
                         else
                             onChooseItemListener.chooseItem(i, strings.get(i));
                     }
-
-
                     invalidate();
                 }
 
                 break;
         }
         return true;
-//        return super.onTouchEvent(event);
     }
 
     private int toOnTouchUp(float x) {
@@ -327,7 +315,6 @@ public class DragChooseView extends View {
             if (x > defaultWidth * i / counts && x <= defaultWidth * (i + 1) / counts)
                 j = i;
         }
-
         return j;
     }
 
@@ -336,7 +323,6 @@ public class DragChooseView extends View {
         for (int i = 0; i < counts; i++) {
             if (removeWidth > defaultWidth * i / counts && removeWidth <= defaultWidth * (i + 1) / counts)
                 j = i;
-
         }
 
         return j;
@@ -344,8 +330,8 @@ public class DragChooseView extends View {
 
     private int toOnTouchDown(float x, float y) {
         for (int i = 0; i < counts; i++) {
-            if (x >= (defaultWidth* (i * 2 + 1) / (counts * 2) - pressedBitmap.getWidth() / 2)
-                    && x <= (defaultWidth * (i * 2 + 1)/ (counts * 2) + pressedBitmap.getWidth() / 2)
+            if (x >= (defaultWidth * (i * 2 + 1) / (counts * 2) - pressedBitmap.getWidth() / 2)
+                    && x <= (defaultWidth * (i * 2 + 1) / (counts * 2) + pressedBitmap.getWidth() / 2)
                     && y <= (defaultHeight / 2 + shiftDownHeight + pressedBitmap.getWidth() / 2)
                     && y >= (defaultHeight / 2 + shiftDownHeight - pressedBitmap.getWidth() / 2)
                     && removeWidth == (defaultWidth * (i * 2 + 1) / (counts * 2))) {
