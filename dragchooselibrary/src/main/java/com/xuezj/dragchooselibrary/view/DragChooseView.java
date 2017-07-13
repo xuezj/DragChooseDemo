@@ -81,23 +81,17 @@ public class DragChooseView extends View {
                 getDefaultHeightSize(getSuggestedMinimumHeight(), heightMeasureSpec));
     }
 
-    /**
-     * 获取默认的宽高值
-     */
+
     public int getDefaultHeightSize(int size, int measureSpec) {
         int result = size;
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
-        Log.d("MyView", "HeightspecMode:" + specMode);
-        Log.d("MyView", "HeightspecSize:" + specSize);
         switch (specMode) {
             case MeasureSpec.UNSPECIFIED:
                 result = size;
                 break;
             case MeasureSpec.AT_MOST:
                 result = (int) (textSize + radius * 6 + shiftDownHeight);
-                Log.d("MyView", shiftDownHeight + "Heightresult:" + (textSize));
-                Log.d("MyView", "++++++++++++++++++++++++++++++++++++");
                 break;
             case MeasureSpec.EXACTLY:
                 if (specSize < (textSize + radius * 6 + shiftDownHeight)) {
@@ -114,8 +108,6 @@ public class DragChooseView extends View {
         int result = size;
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
-        Log.d("MyView", "widthspecMode:" + specMode);
-        Log.d("MyView", "widthspecSize:" + specSize);
 
         switch (specMode) {
             case MeasureSpec.UNSPECIFIED:
@@ -138,14 +130,13 @@ public class DragChooseView extends View {
             pressedBitmap = drawableEnabled.getBitmap();
         else {
             pressedBitmap = drawableToBitmap(getResources().getDrawable(R.drawable.choose_drawable));
-//            .decodeResource(getResources(), R.drawable.choose_drawable)
-//                    .BitmapFactory.decodeResource(getResources(), R.drawable.choose_drawable);
+
         }
         backgroundColor = a.getColor(R.styleable.drag_choose_view_background_color, backgroundColor);
         borderGray = a.getColor(R.styleable.drag_choose_view_border_color, defaultColor);
         defaultTextColor = a.getColor(R.styleable.drag_choose_view_text_default_color, defaultTextColor);
         selectTextColor = a.getColor(R.styleable.drag_choose_view_text_select_color, selectTextColor);
-//        borderGray=0xFFcfcfd3;
+
         textSize = a.getDimension(R.styleable.drag_choose_view_text_size, 20);
         radius = a.getInt(R.styleable.drag_choose_view_radius, radius);
         counts = a.getInt(R.styleable.drag_choose_view_counts, counts);
@@ -205,8 +196,8 @@ public class DragChooseView extends View {
         toDrawSquares(canvas, rWidth);
 
 
-        Bitmap newbm = Bitmap.createScaledBitmap(pressedBitmap, radius * 3, radius * 3, true);
-        canvas.drawBitmap(newbm, removeWidth - newbm.getWidth() / 2, (defaultHeight / 2 + shiftDownHeight) - newbm.getWidth() / 2, null);
+        Bitmap newBm = Bitmap.createScaledBitmap(pressedBitmap, radius * 3, radius * 3, true);
+        canvas.drawBitmap(newBm, removeWidth - newBm.getWidth() / 2, (defaultHeight / 2 + shiftDownHeight) - newBm.getWidth() / 2, null);
         paint.setTextSize(textSize);
         paint.setStyle(Paint.Style.FILL);
         paint.setTextAlign(Paint.Align.CENTER);
