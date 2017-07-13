@@ -3,13 +3,11 @@ package com.xuezj.dragchooselibrary.view;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -39,7 +37,7 @@ public class DragChooseView extends View {
     private int defaultTextColor = 0xFFa0a0a0;
     private int selectTextColor = 0xFF007DF7;
     private int radius = 15;
-    private int height = radius*2*8/17;
+    private int height = radius * 2 * 8 / 17;
     private int removeWidth = 1;
     private float textSize;
     private boolean moveFlag = false;
@@ -50,6 +48,7 @@ public class DragChooseView extends View {
     private OnChooseItemListener onChooseItemListener;
     private float x2 = 0;
     private boolean sss = false;
+    private int counts = 2;
 
     public DragChooseView(Context context) {
         super(context);
@@ -137,7 +136,7 @@ public class DragChooseView extends View {
         drawableEnabled = (BitmapDrawable) a.getDrawable(R.styleable.drag_choose_view_enabled);
         if (drawableEnabled != null)
             pressedBitmap = drawableEnabled.getBitmap();
-        else{
+        else {
             pressedBitmap = drawableToBitmap(getResources().getDrawable(R.drawable.choose_drawable));
 //            .decodeResource(getResources(), R.drawable.choose_drawable)
 //                    .BitmapFactory.decodeResource(getResources(), R.drawable.choose_drawable);
@@ -148,13 +147,16 @@ public class DragChooseView extends View {
         selectTextColor = a.getColor(R.styleable.drag_choose_view_text_select_color, selectTextColor);
 //        borderGray=0xFFcfcfd3;
         textSize = a.getDimension(R.styleable.drag_choose_view_text_size, 20);
-        radius=a.getInt(R.styleable.drag_choose_view_radius,radius);
-        height = radius*2*8/17;
-        textColors = new int[4];
-        textColors[0] = selectTextColor;
-        textColors[1] = defaultTextColor;
-        textColors[2] = defaultTextColor;
-        textColors[3] = defaultTextColor;
+        radius = a.getInt(R.styleable.drag_choose_view_radius, radius);
+        counts = a.getInt(R.styleable.drag_choose_view_counts, counts);
+        height = radius * 2 * 8 / 17;
+        textColors = new int[counts];
+        for (int i = 0; i < counts; i++) {
+            if (i == 0)
+                textColors[i] = selectTextColor;
+            else
+                textColors[i] = defaultTextColor;
+        }
 //        pressedBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.sliderwifion);
         a.recycle();
     }
@@ -164,10 +166,15 @@ public class DragChooseView extends View {
         for (int i = 0; i < strings.length; i++) {
             s.add(strings[i]);
         }
-        if (s.size() < 4) {
-            for (int i = 0; i < 4 - s.size(); i++) {
+        if (s.size() < counts) {
+            for (int i = 0; i < counts - s.size(); i++) {
                 s.add("");
             }
+        }else{
+            int j=s.size();
+            for (int i=0;i<j-counts;i++)
+                s.remove(s.size()-1);
+
         }
         if (s.size() != 0) {
             shiftDownHeight = 10;
@@ -192,53 +199,14 @@ public class DragChooseView extends View {
 //            defaultHeight=120;
 //        }
         if (removeWidth == 1)
-            removeWidth = defaultWidth / 8;
+            removeWidth = defaultWidth / (counts * 2);
         long rWidth = Math.round(Math.sqrt(Math.pow(radius, 2) - Math.pow(height / 2, 2)));
         //画圆和圆边线
-        paint.setColor(backgroundColor);  //设置画笔颜色
-        paint.setStyle(Paint.Style.FILL);//设置填充样式
-        canvas.drawCircle(defaultWidth / 8, defaultHeight / 2 + shiftDownHeight, radius, paint);
-
-        canvas.drawCircle(defaultWidth * 3 / 8, defaultHeight / 2 + shiftDownHeight, radius, paint);
-        canvas.drawCircle(defaultWidth * 5 / 8, defaultHeight / 2 + shiftDownHeight, radius, paint);
-        canvas.drawCircle(defaultWidth * 7 / 8, defaultHeight / 2 + shiftDownHeight, radius, paint);
-        paint.setColor(borderGray);  //设置画笔颜色
-        paint.setStyle(Paint.Style.STROKE);//设置填充样式
-        paint.setStrokeWidth(2);
-        canvas.drawCircle(defaultWidth / 8, defaultHeight / 2 + shiftDownHeight, radius + 2, paint);
-        canvas.drawCircle(defaultWidth * 3 / 8, defaultHeight / 2 + shiftDownHeight, radius + 2, paint);
-        canvas.drawCircle(defaultWidth * 5 / 8, defaultHeight / 2 + shiftDownHeight, radius + 2, paint);
-        canvas.drawCircle(defaultWidth * 7 / 8, defaultHeight / 2 + shiftDownHeight, radius + 2, paint);
+        toDrawCircle(canvas);
+        toDrawSquares(canvas, rWidth);
 
 
         //画横线
-        paint.setColor(backgroundColor);  //设置画笔颜色
-        paint.setStyle(Paint.Style.FILL);//设置填充样式
-        paint.setStrokeWidth(1);
-        canvas.drawRect(defaultWidth / 8 + rWidth, (defaultHeight / 2 + shiftDownHeight) - height / 2,
-                defaultWidth * 3 / 8 - rWidth, (defaultHeight / 2 + shiftDownHeight) + height / 2, paint);// 长方形
-        canvas.drawRect(defaultWidth * 3 / 8 + rWidth, (defaultHeight / 2 + shiftDownHeight) - height / 2,
-                defaultWidth * 5 / 8 - rWidth, (defaultHeight / 2 + shiftDownHeight) + height / 2, paint);// 长方形
-        canvas.drawRect(defaultWidth * 5 / 8 + rWidth, (defaultHeight / 2 + shiftDownHeight) - height / 2,
-                defaultWidth * 7 / 8 - rWidth, (defaultHeight / 2 + shiftDownHeight) + height / 2, paint);// 长方形
-
-        //画横线边
-        paint.setColor(borderGray);  //设置画笔颜色
-        paint.setStrokeWidth(2);
-        canvas.drawLine(defaultWidth / 8 + rWidth, (defaultHeight / 2 + shiftDownHeight) - (height / 2 + 1),
-                defaultWidth * 3 / 8 - rWidth, (defaultHeight / 2 + shiftDownHeight) - (height / 2 + 1), paint);
-        canvas.drawLine(defaultWidth / 8 + rWidth, (defaultHeight / 2 + shiftDownHeight) + (height / 2 + 1),
-                defaultWidth * 3 / 8 - rWidth, (defaultHeight / 2 + shiftDownHeight) + (height / 2 + 1), paint);
-
-        canvas.drawLine(defaultWidth * 3 / 8 + rWidth, (defaultHeight / 2 + shiftDownHeight) - (height / 2 + 1),
-                defaultWidth * 5 / 8 - rWidth, (defaultHeight / 2 + shiftDownHeight) - (height / 2 + 1), paint);
-        canvas.drawLine(defaultWidth * 3 / 8 + rWidth, (defaultHeight / 2 + shiftDownHeight) + (height / 2 + 1),
-                defaultWidth * 5 / 8 - rWidth, (defaultHeight / 2 + shiftDownHeight) + (height / 2 + 1), paint);
-
-        canvas.drawLine(defaultWidth * 5 / 8 + rWidth, (defaultHeight / 2 + shiftDownHeight) - (height / 2 + 1),
-                defaultWidth * 7 / 8 - rWidth, (defaultHeight / 2 + shiftDownHeight) - (height / 2 + 1), paint);
-        canvas.drawLine(defaultWidth * 5 / 8 + rWidth, (defaultHeight / 2 + shiftDownHeight) + (height / 2 + 1),
-                defaultWidth * 7 / 8 - rWidth, (defaultHeight / 2 + shiftDownHeight) + (height / 2 + 1), paint);
 
         Bitmap newbm = Bitmap.createScaledBitmap(pressedBitmap, radius * 3, radius * 3, true);
         //canvas.drawRect(frame.left + MIDDLE_LINE_PADDING, slideTop - MIDDLE_LINE_WIDTH/2, frame.right - MIDDLE_LINE_PADDING,slideTop + MIDDLE_LINE_WIDTH/2, paint);
@@ -251,11 +219,39 @@ public class DragChooseView extends View {
 
             //该方法即为设置基线上那个点究竟是left,center,还是right  这里我设置为center
 
-            canvas.drawText(strings.get(i), defaultWidth * (i * 2 + 1) / 8, defaultHeight / 2 - radius * 2, paint);
+            canvas.drawText(strings.get(i), defaultWidth * (i * 2 + 1) / (counts*2), defaultHeight / 2 - radius * 2, paint);
         }
 
     }
 
+
+    private void toDrawCircle(Canvas canvas) {
+        for (int i = 0; i < counts; i++) {
+            paint.setColor(backgroundColor);  //设置画笔颜色
+            paint.setStyle(Paint.Style.FILL);//设置填充样式
+            canvas.drawCircle(defaultWidth * (i * 2 + 1) / (counts * 2), defaultHeight / 2 + shiftDownHeight, radius, paint);
+            paint.setColor(borderGray);  //设置画笔颜色
+            paint.setStyle(Paint.Style.STROKE);//设置填充样式
+            paint.setStrokeWidth(2);
+            canvas.drawCircle(defaultWidth * (i * 2 + 1) / (counts * 2), defaultHeight / 2 + shiftDownHeight, radius + 2, paint);
+        }
+    }
+
+    private void toDrawSquares(Canvas canvas, long rWidth) {
+        for (int i = 0; i < counts - 1; i++) {
+            paint.setColor(backgroundColor);  //设置画笔颜色
+            paint.setStyle(Paint.Style.FILL);//设置填充样式
+            paint.setStrokeWidth(1);
+            canvas.drawRect(defaultWidth * (i * 2 + 1) / (counts * 2) + rWidth, (defaultHeight / 2 + shiftDownHeight) - height / 2,
+                    defaultWidth * (i * 2 + 3) / (counts * 2) - rWidth, (defaultHeight / 2 + shiftDownHeight) + height / 2, paint);// 长方形
+            paint.setColor(borderGray);  //设置画笔颜色
+            paint.setStrokeWidth(2);
+            canvas.drawLine(defaultWidth * (i * 2 + 1) / (counts * 2) + rWidth, (defaultHeight / 2 + shiftDownHeight) - (height / 2 + 1),
+                    defaultWidth * (i * 2 + 3) / (counts * 2) - rWidth, (defaultHeight / 2 + shiftDownHeight) - (height / 2 + 1), paint);
+            canvas.drawLine(defaultWidth * (i * 2 + 1) / (counts * 2) + rWidth, (defaultHeight / 2 + shiftDownHeight) + (height / 2 + 1),
+                    defaultWidth * (i * 2 + 3) / (counts * 2) - rWidth, (defaultHeight / 2 + shiftDownHeight) + (height / 2 + 1), paint);
+        }
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -267,64 +263,17 @@ public class DragChooseView extends View {
         switch (action) {
             case MotionEvent.ACTION_DOWN://按下
                 sss = false;
-                Log.i("ttttt", "ACTION_DOWN");
-                Log.i("ttttts", removeWidth + "ACTION_DOWN" + defaultWidth / 8);
-                Log.i("ttttts", (defaultWidth / 8 - pressedBitmap.getWidth() / 2) + "ACTION_DOWN" + x);
-                Log.i("ttttts", (defaultWidth / 8 + pressedBitmap.getWidth() / 2) + "ACTION_DOWN" + x);
-                Log.i("ttttts", (defaultHeight / 2 + shiftDownHeight + pressedBitmap.getWidth() / 2) + "ACTION_DOWN" + y);
-                Log.i("ttttts", (defaultHeight / 2 + shiftDownHeight - pressedBitmap.getWidth() / 2) + "ACTION_DOWN" + y);
-                if (x >= (defaultWidth / 8 - pressedBitmap.getWidth() / 2)
-                        && x <= (defaultWidth / 8 + pressedBitmap.getWidth() / 2)
-                        && y <= (defaultHeight / 2 + shiftDownHeight + pressedBitmap.getWidth() / 2)
-                        && y >= (defaultHeight / 2 + shiftDownHeight - pressedBitmap.getWidth() / 2)
-                        && removeWidth == defaultWidth / 8) {
-                    moveFlag = true;
-                    removeWidth = (int) x;
-                    if (drawablePressed != null)
-                        pressedBitmap = drawablePressed.getBitmap();
-                    else{
-                        pressedBitmap =drawableToBitmap(getResources().getDrawable(R.drawable.choose_drawable));;
-                    }
-                    Log.i("ttttts", "ACTION_DOWN");
-                } else if (x >= defaultWidth * 3 / 8 - pressedBitmap.getWidth() / 2
-                        && x <= defaultWidth * 3 / 8 + pressedBitmap.getWidth() / 2
-                        && y <= defaultHeight / 2 + shiftDownHeight + pressedBitmap.getWidth() / 2
-                        && y >= defaultHeight / 2 + shiftDownHeight - pressedBitmap.getWidth() / 2
-                        && removeWidth == defaultWidth * 3 / 8) {
-                    moveFlag = true;
-                    removeWidth = (int) x;
-                    if (drawablePressed != null)
-                        pressedBitmap = drawablePressed.getBitmap();
-                    else{
-                        pressedBitmap =drawableToBitmap(getResources().getDrawable(R.drawable.choose_drawable));;
-                    }
-                } else if (x >= defaultWidth * 5 / 8 - pressedBitmap.getWidth() / 2
-                        && x <= defaultWidth * 5 / 8 + pressedBitmap.getWidth() / 2
-                        && y <= defaultHeight / 2 + shiftDownHeight + pressedBitmap.getWidth() / 2
-                        && y >= defaultHeight / 2 + shiftDownHeight - pressedBitmap.getWidth() / 2
-                        && removeWidth == defaultWidth * 5 / 8) {
-                    moveFlag = true;
-                    removeWidth = (int) x;
-                    if (drawablePressed != null)
-                        pressedBitmap = drawablePressed.getBitmap();
-                    else{
-                        pressedBitmap =drawableToBitmap(getResources().getDrawable(R.drawable.choose_drawable));;
-                    }
-                } else if (x >= defaultWidth * 7 / 8 - pressedBitmap.getWidth() / 2
-                        && x <= defaultWidth * 7 / 8 + pressedBitmap.getWidth() / 2
-                        && y <= defaultHeight / 2 + shiftDownHeight + pressedBitmap.getWidth() / 2
-                        && y >= defaultHeight / 2 + shiftDownHeight - pressedBitmap.getWidth() / 2
-                        && removeWidth == defaultWidth * 7 / 8) {
-                    moveFlag = true;
-                    removeWidth = (int) x;
-                    if (drawablePressed != null)
-                        pressedBitmap = drawablePressed.getBitmap();
-                    else{
-                        pressedBitmap =drawableToBitmap(getResources().getDrawable(R.drawable.choose_drawable));
-                    }
-                } else {
+                if (toOnTouchDown(x, y) < 0) {
                     moveFlag = false;
                     x2 = x1;
+                } else {
+                    moveFlag = true;
+                    removeWidth = (int) x;
+                    if (drawablePressed != null)
+                        pressedBitmap = drawablePressed.getBitmap();
+                    else {
+                        pressedBitmap = drawableToBitmap(getResources().getDrawable(R.drawable.choose_drawable));
+                    }
                 }
 
                 break;
@@ -332,19 +281,10 @@ public class DragChooseView extends View {
             case MotionEvent.ACTION_MOVE://移动
                 if (moveFlag) {
                     removeWidth = (int) x;
-                    if (removeWidth >= defaultWidth / 8 && removeWidth <= defaultWidth * 7 / 8) {
-                        if (removeWidth <= defaultWidth / 4) {
-                            toColor(0);
-                        } else if (removeWidth > defaultWidth / 4 && removeWidth <= defaultWidth / 2) {
-                            toColor(1);
-                        } else if (removeWidth > defaultWidth / 2 && removeWidth <= defaultWidth * 3 / 4) {
-                            toColor(2);
-                        } else {
-                            toColor(3);
-                        }
+                    if (removeWidth >= defaultWidth / (counts*2) && removeWidth <= defaultWidth * (counts*2-1) / (counts*2)) {
+                        toColor(toOnTouchMove(removeWidth));
                         invalidate();
                     }
-                    Log.i("ttttt", (defaultWidth / 8 - 10) + "ACTION_MOVE" + removeWidth);
                 } else {
                     if (Math.abs(x2 - x1) > radius * 2 + 25) {
                         sss = true;
@@ -358,46 +298,19 @@ public class DragChooseView extends View {
                 if (!sss) {
                     if (drawableEnabled != null)
                         pressedBitmap = drawableEnabled.getBitmap();
-                    else{
-                        pressedBitmap =drawableToBitmap(getResources().getDrawable(R.drawable.choose_drawable));
+                    else {
+                        pressedBitmap = drawableToBitmap(getResources().getDrawable(R.drawable.choose_drawable));
                     }
-                    if (x <= defaultWidth / 4) {
-                        removeWidth = defaultWidth / 8;
-                        toColor(0);
-                        if (onChooseItemListener != null) {
-                            if (strings.size() == 0)
-                                onChooseItemListener.chooseItem(0, null);
-                            else
-                                onChooseItemListener.chooseItem(0, strings.get(0));
-                        }
-                    } else if (x > defaultWidth / 4 && x <= defaultWidth / 2) {
-                        removeWidth = defaultWidth * 3 / 8;
-                        toColor(1);
-                        if (onChooseItemListener != null) {
-                            if (strings.size() == 0)
-                                onChooseItemListener.chooseItem(1, null);
-                            else
-                                onChooseItemListener.chooseItem(1, strings.get(1));
-                        }
-                    } else if (x > defaultWidth / 2 && x <= defaultWidth * 3 / 4) {
-                        removeWidth = defaultWidth * 5 / 8;
-                        toColor(2);
-                        if (onChooseItemListener != null) {
-                            if (strings.size() == 0)
-                                onChooseItemListener.chooseItem(2, null);
-                            else
-                                onChooseItemListener.chooseItem(2, strings.get(2));
-                        }
-                    } else {
-                        removeWidth = defaultWidth * 7 / 8;
-                        toColor(3);
-                        if (onChooseItemListener != null) {
-                            if (strings.size() == 0)
-                                onChooseItemListener.chooseItem(3, null);
-                            else
-                                onChooseItemListener.chooseItem(3, strings.get(3));
-                        }
+                    int i = toOnTouchUp(x);
+                    removeWidth = defaultWidth * (i * 2 + 1)/ (counts*2);
+                    toColor(i);
+                    if (onChooseItemListener != null) {
+                        if (strings.size() == 0)
+                            onChooseItemListener.chooseItem(i, null);
+                        else
+                            onChooseItemListener.chooseItem(i, strings.get(i));
                     }
+
 
                     invalidate();
                 }
@@ -406,6 +319,41 @@ public class DragChooseView extends View {
         }
         return true;
 //        return super.onTouchEvent(event);
+    }
+
+    private int toOnTouchUp(float x) {
+        int j = 0;
+        for (int i = 0; i < counts; i++) {
+            if (x > defaultWidth * i / counts && x <= defaultWidth * (i + 1) / counts)
+                j = i;
+        }
+
+        return j;
+    }
+
+    private int toOnTouchMove(int removeWidth) {
+        int j = 0;
+        for (int i = 0; i < counts; i++) {
+            if (removeWidth > defaultWidth * i / counts && removeWidth <= defaultWidth * (i + 1) / counts)
+                j = i;
+
+        }
+
+        return j;
+    }
+
+    private int toOnTouchDown(float x, float y) {
+        for (int i = 0; i < counts; i++) {
+            if (x >= (defaultWidth* (i * 2 + 1) / (counts * 2) - pressedBitmap.getWidth() / 2)
+                    && x <= (defaultWidth * (i * 2 + 1)/ (counts * 2) + pressedBitmap.getWidth() / 2)
+                    && y <= (defaultHeight / 2 + shiftDownHeight + pressedBitmap.getWidth() / 2)
+                    && y >= (defaultHeight / 2 + shiftDownHeight - pressedBitmap.getWidth() / 2)
+                    && removeWidth == (defaultWidth * (i * 2 + 1) / (counts * 2))) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     private void toColor(int index) {
@@ -418,12 +366,13 @@ public class DragChooseView extends View {
     public interface OnChooseItemListener {
         void chooseItem(int index, String text);
     }
-    public  Bitmap drawableToBitmap(Drawable drawable) {
-        Bitmap bitmap = Bitmap.createBitmap(radius*4,radius*4,
+
+    public Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap = Bitmap.createBitmap(radius * 4, radius * 4,
                 drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
                         : Bitmap.Config.RGB_565);
         Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, radius*4, radius*4);
+        drawable.setBounds(0, 0, radius * 4, radius * 4);
         drawable.draw(canvas);
         return bitmap;
     }

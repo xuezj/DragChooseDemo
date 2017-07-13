@@ -9,6 +9,7 @@
         <attr name="text_select_color" format="color" />
         <attr name="text_size" format="dimension" />
         <attr name="radius" format="integer" />
+        <attr name="counts" format="integer" />
 
     </declare-styleable>
 </resources>

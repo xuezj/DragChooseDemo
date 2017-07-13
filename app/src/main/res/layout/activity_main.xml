@@ -1,22 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:choose="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.xuezj.dragchoosedemo.MainActivity">
+    tools:context=".MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/t1"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"/>
+        android:text="自适应宽高及设置各种属性"/>
+
     <com.xuezj.dragchooselibrary.view.DragChooseView
+        android:id="@+id/my_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:radius="50">
+        android:layout_below="@+id/t1"
+        choose:background_color="#efeff4"
+        choose:border_color="#ffcfcfd3"
+        choose:enabled="@mipmap/sliderwifion"
+        choose:pressed="@mipmap/sliderwifioff"
+        choose:text_size="12sp"
+        choose:radius="20"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="自定义高及默认样式"/>
 
-    </com.xuezj.dragchooselibrary.view.DragChooseView>
+    <com.xuezj.dragchooselibrary.view.DragChooseView
+        android:id="@+id/my_view2"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"/>
 
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
