@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="drag_choose_view">
+        <attr name="enabled" format="reference" />
+        <attr name="background_color" format="color" />
+        <attr name="border_color" format="color" />
+        <attr name="pressed" format="reference" />
+        <attr name="text_default_color" format="color" />
+        <attr name="text_select_color" format="color" />
+        <attr name="text_size" format="dimension" />
+        <attr name="radius" format="integer" />
+
+    </declare-styleable>
+</resources>
