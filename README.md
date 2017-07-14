@@ -23,7 +23,7 @@
 | :-------------:| :-----:|
 | setTextData | 设置文字（文字个数大于按钮最大个数时自动移除后面文字） |
 | addOnChooseItemListener |   添加选中后回调监听（初始化后默认选中） |
-| setdefaultSelectedItem |    设置默认选中项（下标从0开始，大于最大个数后默认选中0） |
+| setdefaultSelectedItem |    设置默认选中项（默认选中0，下标从0开始，大于最大个数后默认选中0） |
 
 ## 使用
 布局文件中的使用
@@ -47,6 +47,7 @@
 dragChooseView =(DragChooseView)findViewById(R.id.my_view);
 
 dragChooseView.setTextData("自定义","单选","双选","全选","sss","ddd");
+dragChooseView.setdefaultSelectedItem(2);
 dragChooseView.addOnChooseItemListener(new DragChooseView.OnChooseItemListener() {
        @Override
        public void chooseItem(int index, String text) {
