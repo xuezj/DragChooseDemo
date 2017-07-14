@@ -32,7 +32,6 @@
         android:id="@+id/my_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/t1"
         choose:background_color="#efeff4"
         choose:border_color="#ffcfcfd3"
         choose:enabled="@mipmap/sliderwifion"
