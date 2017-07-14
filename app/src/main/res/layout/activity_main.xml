@@ -22,8 +22,9 @@
         choose:background_color="#efeff4"
         choose:border_color="#ffcfcfd3"
         choose:enabled="@mipmap/sliderwifion"
-        choose:pressed="@mipmap/sliderwifioff"
+        choose:focused="@mipmap/sliderwifioff"
         choose:text_size="12sp"
+        choose:counts="5"
         choose:radius="20"/>
     <TextView
         android:layout_width="match_parent"

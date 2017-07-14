@@ -49,6 +49,7 @@ public class DragChooseView extends View {
     private float x2 = 0;
     private boolean sss = false;
     private int counts = 4;
+    private int defaultIndex = 0;
 
     public DragChooseView(Context context) {
         super(context);
@@ -82,7 +83,7 @@ public class DragChooseView extends View {
     }
 
 
-    public int getDefaultHeightSize(int size, int measureSpec) {
+    private int getDefaultHeightSize(int size, int measureSpec) {
         int result = size;
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
@@ -104,7 +105,7 @@ public class DragChooseView extends View {
         return result;
     }
 
-    public int getDefaultwidthSize(int size, int measureSpec) {
+    private int getDefaultwidthSize(int size, int measureSpec) {
         int result = size;
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
@@ -124,7 +125,7 @@ public class DragChooseView extends View {
     private void setCustomAttributes(AttributeSet attrs) {
         paint = new Paint();
         TypedArray a = mContext.obtainStyledAttributes(attrs, R.styleable.drag_choose_view);
-        drawablePressed = (BitmapDrawable) a.getDrawable(R.styleable.drag_choose_view_pressed);
+        drawablePressed = (BitmapDrawable) a.getDrawable(R.styleable.drag_choose_view_focused);
         drawableEnabled = (BitmapDrawable) a.getDrawable(R.styleable.drag_choose_view_enabled);
         if (drawableEnabled != null)
             pressedBitmap = drawableEnabled.getBitmap();
@@ -155,7 +156,15 @@ public class DragChooseView extends View {
 //        pressedBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.sliderwifion);
         a.recycle();
     }
+    public void setdefaultSelectedItem(int index){
+        if(index<0||index>counts){
 
+        }else{
+            this.defaultIndex=index;
+        }
+
+
+    }
     public void setTextData(String... strings) {
         List<String> s = new ArrayList<>();
         for (int i = 0; i < strings.length; i++) {
@@ -190,7 +199,7 @@ public class DragChooseView extends View {
         defaultHeight = getHeight();
 
         if (removeWidth == 1)
-            removeWidth = defaultWidth / (counts * 2);
+            removeWidth = defaultWidth*(defaultIndex* 2 + 1) / (counts * 2);
         long rWidth = Math.round(Math.sqrt(Math.pow(radius, 2) - Math.pow(height / 2, 2)));
         toDrawCircle(canvas);
         toDrawSquares(canvas, rWidth);

@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         dragChooseView =(DragChooseView)findViewById(R.id.my_view);
         dragChooseView.setTextData("自定义","单选","双选","全选","sss","ddd");
+        dragChooseView.setdefaultSelectedItem(6);
         dragChooseView.addOnChooseItemListener(new DragChooseView.OnChooseItemListener() {
             @Override
             public void chooseItem(int index, String text) {
