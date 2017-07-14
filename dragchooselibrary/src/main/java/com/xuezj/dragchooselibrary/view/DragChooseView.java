@@ -148,7 +148,7 @@ public class DragChooseView extends View {
         height = radius * 2 * 8 / 17;
         textColors = new int[counts];
         for (int i = 0; i < counts; i++) {
-            if (i == 0)
+            if (i == defaultIndex)
                 textColors[i] = selectTextColor;
             else
                 textColors[i] = defaultTextColor;
@@ -162,7 +162,13 @@ public class DragChooseView extends View {
         }else{
             this.defaultIndex=index;
         }
-
+        textColors = new int[counts];
+        for (int i = 0; i < counts; i++) {
+            if (i == defaultIndex)
+                textColors[i] = selectTextColor;
+            else
+                textColors[i] = defaultTextColor;
+        }
 
     }
     public void setTextData(String... strings) {
