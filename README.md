@@ -39,7 +39,8 @@
         choose:focused="@mipmap/sliderwifioff"
         choose:text_size="12sp"
         choose:counts="5"
-        choose:radius="20"/>
+        choose:radius="20" />
+ 
 ```
 代码中调用
 ```Java
